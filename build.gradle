@@ -12,6 +12,14 @@ repositories {
 	mavenCentral()
 }
 
+task displayReport() {
+	File report = new File(System.getProperty("user.dir")+"\\build\\reports\\tests\\test\\index.html")
+	doLast {
+		java.awt.Desktop.desktop.browse(report.toURI())
+	}
+}
+test.finalizedBy(displayReport)
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
