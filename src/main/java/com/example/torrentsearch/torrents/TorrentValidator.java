@@ -1,4 +1,4 @@
-package com.example.demo.torrents;
+package com.example.torrentsearch.torrents;
 
 public class TorrentValidator {
     public boolean validate(TorrentDataHolder[] torrentDataHolders){

@@ -1,4 +1,4 @@
-package com.example.demo.configurations;
+package com.example.torrentsearch.configurations;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
