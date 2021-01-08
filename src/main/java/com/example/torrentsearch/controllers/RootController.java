@@ -20,13 +20,11 @@ public class RootController {
         StringBuilder response = new StringBuilder();
         for (Class<?> getSource : getSources) {
             try {
-                for(Method method : getSource.getMethods()){
-                    response.append(method.getName());
-                    if(method.getName().equals("boom")){
-                        response.append(method.invoke(getSource.getConstructor().newInstance()));
-                    }
-                }
-            } catch (Exception e){
+                TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
+                        .getMethod("getTorrents", String.class)
+                        .invoke(getSource.getConstructor().newInstance(), "Aditya");
+                response.append(dataHolders.length);
+            } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
