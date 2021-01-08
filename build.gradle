@@ -1,3 +1,5 @@
+import java.awt.Desktop
+
 plugins {
 	id 'org.springframework.boot' version '2.4.1'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
@@ -15,13 +17,14 @@ repositories {
 task displayReport() {
 	File report = new File(System.getProperty("user.dir")+"\\build\\reports\\tests\\test\\index.html")
 	doLast {
-		java.awt.Desktop.desktop.browse(report.toURI())
+		Desktop.desktop.browse(report.toURI())
 	}
 }
 test.finalizedBy(displayReport)
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'junit:junit:4.12'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
