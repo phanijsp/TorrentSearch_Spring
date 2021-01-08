@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
-class DemoApplicationTests {
+class MainApplicationTests {
 
     @Autowired
     private RestTemplate restTemplate;
