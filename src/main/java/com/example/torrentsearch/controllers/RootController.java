@@ -22,7 +22,7 @@ public class RootController {
             try {
                 TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
                         .getMethod("getTorrents", String.class)
-                        .invoke(getSource.getConstructor().newInstance(), "Aditya");
+                        .invoke(getSource.getConstructor().newInstance(), "Avengers");
                 response.append(dataHolders.length);
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
