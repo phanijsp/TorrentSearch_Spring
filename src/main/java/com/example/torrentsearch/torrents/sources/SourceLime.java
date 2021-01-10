@@ -94,7 +94,7 @@ public class SourceLime implements TorrentSource {
 					.userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
 					.referrer("http://www.google.com")
 					.followRedirects(true)
-					.timeout(5000)
+					.timeout(2000)
 					.get();
 			System.out.println(url);
 			Elements magnets = document.select(".dltorrent p a:contains(Magnet Download)");
