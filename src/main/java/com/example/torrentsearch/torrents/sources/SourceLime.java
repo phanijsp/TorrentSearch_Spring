@@ -3,7 +3,6 @@ package com.example.torrentsearch.torrents.sources;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentSource;
 import com.example.torrentsearch.torrents.TorrentValidator;
-import com.example.torrentsearch.torrents.Utils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -28,7 +27,7 @@ public class SourceLime implements TorrentSource {
 
 	@Override
 	public TorrentDataHolder[] getTorrents(String searchQuery) {
-		String baseUrl = "https://wwv.xn--lmetorrents-ocb.cc";
+		final String baseUrl = "https://wwv.xn--lmetorrents-ocb.cc";
 		ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
 		try {
 			String url = "https://wwv.xn--lmetorrents-ocb.cc/search/all/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + "/";
@@ -68,7 +67,7 @@ public class SourceLime implements TorrentSource {
 									sizeNodes.get(finalI).text(),
 									addedNodes.get(finalI).text(),
 									"Lime",
-									Utils.appendBaseEndUrls(baseUrl, endUrlNodes.get(finalI).attr("href")),
+									appendBaseEndUrls(baseUrl, endUrlNodes.get(finalI).attr("href")),
 									magnet
 							));
 						}
@@ -88,13 +87,13 @@ public class SourceLime implements TorrentSource {
 
 	private String getMagnet(String baseUrl, String endUrl) {
 		String magnetLink = "";
+		String url = appendBaseEndUrls(baseUrl, endUrl);
 		try {
-			String url = Utils.appendBaseEndUrls(baseUrl, endUrl);
 			Document document = Jsoup.connect(url).ignoreContentType(true)
 					.userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
 					.referrer("http://www.google.com")
 					.followRedirects(true)
-					.timeout(2000)
+					.timeout(5000)
 					.get();
 			System.out.println(url);
 			Elements magnets = document.select(".dltorrent p a:contains(Magnet Download)");
@@ -102,8 +101,16 @@ public class SourceLime implements TorrentSource {
 				return magnets.get(0).attr("href");
 			}
 		} catch (IOException e) {
-			System.out.println("IOException at line 124 of TorrentListGrabber.java while trying to parse magnet link from url " + endUrl);
+			System.out.println("IOException at TorrentListGrabber.java while trying to parse magnet link from url " + url);
 		}
 		return magnetLink;
+	}
+
+	public  String appendBaseEndUrls(String baseUrl, String endUrl){
+		if(endUrl.startsWith(baseUrl)){
+			return endUrl;
+		}else{
+			return baseUrl + endUrl;
+		}
 	}
 }

@@ -22,15 +22,27 @@ public class RootController {
 
 		JSONObject responseJSON = new JSONObject();
 		JSONArray torrentsArrayJSON = new JSONArray();
+		ArrayList<Thread> sourceRunners = new ArrayList<>();
 		for (Class<?> getSource : getSources) {
-			try {
-				TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
-						.getMethod("getTorrents", String.class)
-						.invoke(getSource.getConstructor().newInstance(), "Avengers");
-				for (TorrentDataHolder dataHolder : dataHolders) {
-					torrentsArrayJSON.put(dataHolder.getDataInJSON());
+			Thread t = new Thread(() -> {
+				try {
+					TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
+							.getMethod("getTorrents", String.class)
+							.invoke(getSource.getConstructor().newInstance(), "Avengers");
+					for (TorrentDataHolder dataHolder : dataHolders) {
+						torrentsArrayJSON.put(dataHolder.getDataInJSON());
+					}
+				} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+					e.printStackTrace();
 				}
-			} catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+			});
+			t.start();
+			sourceRunners.add(t);
+		}
+		for(Thread sourceRunner : sourceRunners){
+			try {
+				sourceRunner.join();
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
