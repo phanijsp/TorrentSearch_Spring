@@ -35,10 +35,11 @@ public class SourceTorLock implements TorrentSource {
             System.out.println(url);
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
                     .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                     .referrer("http://www.google.com")
                     .followRedirects(true)
-                    .timeout(5000)
+                    .timeout(2000)
                     .get();
             Elements titleNodes = document.select("table:eq(0) td:eq(0) b");
             Elements seedsNodes = document.select("table:eq(0) td:eq(3)");
@@ -67,7 +68,7 @@ public class SourceTorLock implements TorrentSource {
                                     leechesNodes.get(finalI).text(),
                                     sizeNodes.get(finalI).text(),
                                     addedNodes.get(finalI).text(),
-                                    "TorLock",
+                                    SourceTorLock.class.getSimpleName(),
                                     appendBaseEndUrls(baseUrl, endUrlNodes.get(finalI).attr("href")),
                                     magnet
                             ));

@@ -37,10 +37,11 @@ public class SourceEttv implements TorrentSource {
             System.out.println(url);
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
+                    .ignoreHttpErrors(true)
                     .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                     .referrer("http://www.google.com")
                     .followRedirects(true)
-                    .timeout(5000)
+                    .timeout(2000)
                     .get();
             Elements titleNodes = document.select("tbody tr td:eq(1) a");
             Elements seedsNodes = document.select("tbody tr td:eq(5)");
@@ -69,7 +70,7 @@ public class SourceEttv implements TorrentSource {
                                     leechesNodes.get(finalI).text(),
                                     sizeNodes.get(finalI).text(),
                                     addedNodes.get(finalI).text(),
-                                    "Ettv",
+                                    SourceEttv.class.getSimpleName(),
                                     appendBaseEndUrls(baseUrl, endUrlNodes.get(finalI).attr("href")),
                                     magnet
                             ));
