@@ -1,6 +1,7 @@
 package com.example.torrentsearch.torrents.sources;
 
 
+import com.example.torrentsearch.configurations.SourceConfiguration;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentSource;
 import com.example.torrentsearch.torrents.TorrentValidator;
@@ -28,9 +29,10 @@ public class SourceEttv implements TorrentSource {
         getSources.add(SourceEttv.class);
     }
 
+    final String baseUrl = "https://www.ettvcentral.com";
+
     @Override
     public TorrentDataHolder[] getTorrents(String searchQuery) {
-        final String baseUrl = "https://www.ettvcentral.com";
         ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
         try {
             String url = "https://www.ettvcentral.com/torrents-search.php?search=" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8);
@@ -38,10 +40,10 @@ public class SourceEttv implements TorrentSource {
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
-                    .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
-                    .referrer("http://www.google.com")
+                    .userAgent(SourceConfiguration.userAgent)
+                    .referrer(SourceConfiguration.referrer)
                     .followRedirects(true)
-                    .timeout(2000)
+                    .timeout(SourceConfiguration.sourceConnectionTimeout)
                     .get();
             Elements titleNodes = document.select("tbody tr td:eq(1) a");
             Elements seedsNodes = document.select("tbody tr td:eq(5)");
@@ -62,7 +64,7 @@ public class SourceEttv implements TorrentSource {
                 for (int i = 0; i < titleNodes.size(); i++) {
                     int finalI = i;
                     Thread MagnetFetcher = new Thread(() -> {
-                        String magnet = getMagnet(baseUrl, endUrlNodes.get(finalI).attr("href"));
+                        String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                         if (magnet.startsWith("magnet")) {
                             torrentDataHolderArrayList.add(new TorrentDataHolder(
                                     titleNodes.get(finalI).text(),
@@ -89,15 +91,15 @@ public class SourceEttv implements TorrentSource {
         return torrentDataHolderArrayList.toArray(TorrentDataHolder[]::new);
     }
 
-    private String getMagnet(String baseUrl, String endUrl) {
+    private String getMagnet(String endUrl) {
         String magnetLink = "";
         String url = appendBaseEndUrls(baseUrl, endUrl);
         try {
             Document document = Jsoup.connect(url).ignoreContentType(true)
-                    .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
-                    .referrer("http://www.google.com")
+                    .userAgent(SourceConfiguration.userAgent)
+                    .referrer(SourceConfiguration.referrer)
                     .followRedirects(true)
-                    .timeout(5000)
+                    .timeout(SourceConfiguration.magnetConnectionTimeout)
                     .get();
             System.out.println(url);
             Elements magnets = document.select("#downloadbox a");
@@ -109,10 +111,11 @@ public class SourceEttv implements TorrentSource {
         }
         return magnetLink;
     }
-    public  String appendBaseEndUrls(String baseUrl, String endUrl){
-        if(endUrl.startsWith(baseUrl)){
+
+    public String appendBaseEndUrls(String baseUrl, String endUrl) {
+        if (endUrl.startsWith(baseUrl)) {
             return endUrl;
-        }else{
+        } else {
             return baseUrl + endUrl;
         }
     }
