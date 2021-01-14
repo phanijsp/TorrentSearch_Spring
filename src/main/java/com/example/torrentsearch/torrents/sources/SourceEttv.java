@@ -1,12 +1,14 @@
 package com.example.torrentsearch.torrents.sources;
 
 
+import com.example.torrentsearch.configurations.SourceCategories;
 import com.example.torrentsearch.configurations.SourceConfiguration;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentSource;
 import com.example.torrentsearch.torrents.TorrentValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,6 +47,7 @@ public class SourceEttv implements TorrentSource {
                     .followRedirects(true)
                     .timeout(SourceConfiguration.sourceConnectionTimeout)
                     .get();
+            Elements categoryNodes = document.select("tbody tr td:eq(0) a img");
             Elements titleNodes = document.select("tbody tr td:eq(1) a");
             Elements seedsNodes = document.select("tbody tr td:eq(5)");
             Elements leechesNodes = document.select("tbody tr td:eq(6)");
@@ -52,7 +55,8 @@ public class SourceEttv implements TorrentSource {
             Elements addedNodes = document.select("tbody tr td:eq(2)");
             Elements endUrlNodes = document.select("tbody tr td:eq(1) a");
             System.out.println(
-                    "titleNodesSize: " + titleNodes.size() +
+                    "categoryNodesSize: " + categoryNodes.size() +
+                            "titleNodesSize: " + titleNodes.size() +
                             "seedNodesSize: " + seedsNodes.size() +
                             "leechesNodesSize: " + leechesNodes.size() +
                             "sizeNodesSize: " + sizeNodes.size() +
@@ -60,13 +64,14 @@ public class SourceEttv implements TorrentSource {
                             "endUrlNodesSize: " + endUrlNodes.size()
             );
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
-            if (TorrentValidator.validate(new Elements[]{titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
+            if (TorrentValidator.validate(new Elements[]{categoryNodes, titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
                 for (int i = 0; i < titleNodes.size(); i++) {
                     int finalI = i;
                     Thread MagnetFetcher = new Thread(() -> {
                         String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                         if (magnet.startsWith("magnet")) {
                             torrentDataHolderArrayList.add(new TorrentDataHolder(
+                                    getCategory(categoryNodes.get(finalI)),
                                     titleNodes.get(finalI).text(),
                                     seedsNodes.get(finalI).text(),
                                     leechesNodes.get(finalI).text(),
@@ -117,6 +122,21 @@ public class SourceEttv implements TorrentSource {
             return endUrl;
         } else {
             return baseUrl + endUrl;
+        }
+    }
+
+    public String getCategory(Element element) {
+        String cat = element.attr("src").toLowerCase();
+        if (cat.contains("/tv")) {
+            return SourceCategories.TV;
+        } else if (cat.contains("/movie")) {
+            return SourceCategories.Movie;
+        } else if (cat.contains("/software")) {
+            return SourceCategories.Applications;
+        } else if (cat.contains("/music")) {
+            return SourceCategories.Music;
+        } else {
+            return SourceCategories.Other;
         }
     }
 }

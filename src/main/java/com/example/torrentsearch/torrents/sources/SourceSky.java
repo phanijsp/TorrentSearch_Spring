@@ -23,7 +23,7 @@ public class SourceSky implements TorrentSource {
 
     @PostConstruct
     public void fun() {
-        getSources.add(SourceSky.class);
+//        getSources.add(SourceSky.class);
     }
 
     final String baseUrl = "https://www.skytorrents.lol/";
@@ -64,6 +64,7 @@ public class SourceSky implements TorrentSource {
                         String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                         if (magnet.startsWith("magnet")) {
                             torrentDataHolderArrayList.add(new TorrentDataHolder(
+                                    null,
                                     titleNodes.get(finalI).text(),
                                     seedsNodes.get(finalI).text(),
                                     leechesNodes.get(finalI).text(),

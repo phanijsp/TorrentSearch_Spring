@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'com.example'
-version = '0.0.1'
+version = '0.0.2'
 sourceCompatibility = '15'
 
 
@@ -31,6 +31,8 @@ dependencies {
 	compile group: 'org.json', name: 'json', version: '20201115'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compile group: 'net.sourceforge.htmlunit', name: 'htmlunit', version: '2.8'
+
 }
 
 test {

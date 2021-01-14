@@ -24,6 +24,7 @@ public class RootController implements ErrorController {
         switch (type) {
             case "search":
                 JSONArray torrentsArrayJSON = new JSONArray();
+                JSONObject sourcesJSON = new JSONObject();
                 ArrayList<Thread> sourceRunners = new ArrayList<>();
                 for (Class<?> getSource : getSources) {
                     Thread t = new Thread(() -> {
@@ -31,6 +32,7 @@ public class RootController implements ErrorController {
                             TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
                                     .getMethod("getTorrents", String.class)
                                     .invoke(getSource.getConstructor().newInstance(), query);
+                            sourcesJSON.put(getSource.getSimpleName(), String.valueOf(dataHolders.length));
                             for (TorrentDataHolder dataHolder : dataHolders) {
                                 torrentsArrayJSON.put(dataHolder.getDataInJSON());
                             }
@@ -53,12 +55,14 @@ public class RootController implements ErrorController {
                 System.out.println(sec + " seconds");
                 responseJSON
                         .put("time", sec)
-                        .put("torrents", torrentsArrayJSON);
+                        .put("torrents", torrentsArrayJSON)
+                        .put("sources", sourcesJSON);
                 break;
         }
         return responseJSON.toString();
 
     }
+
     private static final String PATH = "/error";
 
     @RequestMapping(value = PATH)

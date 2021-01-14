@@ -1,11 +1,13 @@
 package com.example.torrentsearch.torrents.sources;
 
+import com.example.torrentsearch.configurations.SourceCategories;
 import com.example.torrentsearch.configurations.SourceConfiguration;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentSource;
 import com.example.torrentsearch.torrents.TorrentValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,8 @@ public class SourceLime implements TorrentSource {
                     .followRedirects(true)
                     .timeout(SourceConfiguration.sourceConnectionTimeout)
                     .get();
+
+            Elements categoryNodes = document.select(".table2 .tdnormal:eq(1)");
             Elements titleNodes = document.select(".table2 .tt-name a:eq(1)");
             Elements seedsNodes = document.select(".table2 .tdseed");
             Elements leechesNodes = document.select(".table2 .tdleech");
@@ -64,6 +68,7 @@ public class SourceLime implements TorrentSource {
                         String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                         if (magnet.startsWith("magnet")) {
                             torrentDataHolderArrayList.add(new TorrentDataHolder(
+                                    getCategory(categoryNodes.get(finalI)),
                                     titleNodes.get(finalI).text(),
                                     seedsNodes.get(finalI).text(),
                                     leechesNodes.get(finalI).text(),
@@ -114,6 +119,21 @@ public class SourceLime implements TorrentSource {
             return endUrl;
         } else {
             return baseUrl + endUrl;
+        }
+    }
+
+    public String getCategory(Element element) {
+        String cat = element.text().toLowerCase();
+        if (cat.contains("applications")) {
+            return SourceCategories.Applications;
+        } else if (cat.contains("movies")) {
+            return SourceCategories.Movie;
+        } else if (cat.contains("tv shows")) {
+            return SourceCategories.TV;
+        } else if (cat.contains("music")) {
+            return SourceCategories.Music;
+        } else {
+            return SourceCategories.Other;
         }
     }
 }
