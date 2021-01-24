@@ -104,7 +104,6 @@ public class SourceTorLock implements TorrentSource {
                     .followRedirects(true)
                     .timeout(SourceConfiguration.magnetConnectionTimeout)
                     .get();
-            System.out.println(url);
             Elements magnets = document.select("h4 a");
             if (magnets.size() > 0) {
                 return magnets.get(0).attr("href");

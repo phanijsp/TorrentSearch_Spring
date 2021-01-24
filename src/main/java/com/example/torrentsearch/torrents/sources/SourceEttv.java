@@ -106,7 +106,6 @@ public class SourceEttv implements TorrentSource {
                     .followRedirects(true)
                     .timeout(SourceConfiguration.magnetConnectionTimeout)
                     .get();
-            System.out.println(url);
             Elements magnets = document.select("#downloadbox a");
             if (magnets.size() > 0) {
                 return magnets.get(0).attr("href");
