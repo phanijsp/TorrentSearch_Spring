@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 
 @RestController
@@ -31,12 +33,12 @@ public class RootController implements ErrorController {
                         try {
                             TorrentDataHolder[] dataHolders = (TorrentDataHolder[]) getSource
                                     .getMethod("getTorrents", String.class)
-                                    .invoke(getSource.getConstructor().newInstance(), query);
+                                    .invoke(getSource.getConstructor().newInstance(), URLDecoder.decode(query, "UTF-8"));
                             sourcesJSON.put(getSource.getSimpleName(), String.valueOf(dataHolders.length));
                             for (TorrentDataHolder dataHolder : dataHolders) {
                                 torrentsArrayJSON.put(dataHolder.getDataInJSON());
                             }
-                        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
                     });

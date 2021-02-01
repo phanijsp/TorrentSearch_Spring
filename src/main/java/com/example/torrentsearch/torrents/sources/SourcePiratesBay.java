@@ -31,7 +31,7 @@ public class SourcePiratesBay {
 	public TorrentDataHolder[] getTorrents(String searchQuery) {
 		ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
 		try {
-			String url = "https://piratebay.live/search/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8);
+			String url = "https://piratebay.live/search/" + convertSearchQuery(searchQuery);
 			System.out.println(url);
 			Document document = Jsoup.connect(url)
 					.ignoreContentType(true)
@@ -139,5 +139,8 @@ public class SourcePiratesBay {
 		} else {
 			return baseUrl + endUrl;
 		}
+	}
+	public String convertSearchQuery(String searchQuery){
+		return searchQuery.replace(" ","%20");
 	}
 }
