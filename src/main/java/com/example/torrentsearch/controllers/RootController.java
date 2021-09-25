@@ -1,6 +1,7 @@
 package com.example.torrentsearch.controllers;
 
 import com.example.torrentsearch.torrents.TorrentDataHolder;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 
 @RestController
 public class RootController implements ErrorController {
-
+    Logger logger = Logger.getLogger(RootController.class);
     @Autowired
     ArrayList<Class<?>> getSources;
 
@@ -25,6 +26,11 @@ public class RootController implements ErrorController {
         JSONObject responseJSON = new JSONObject();
         switch (type) {
             case "search":
+                try {
+                    logger.debug("Receieved a search request for: "+URLDecoder.decode(query, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    logger.error(e);
+                }
                 JSONArray torrentsArrayJSON = new JSONArray();
                 JSONObject sourcesJSON = new JSONObject();
                 ArrayList<Thread> sourceRunners = new ArrayList<>();
@@ -39,7 +45,7 @@ public class RootController implements ErrorController {
                                 torrentsArrayJSON.put(dataHolder.getDataInJSON());
                             }
                         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | UnsupportedEncodingException e) {
-                            e.printStackTrace();
+                            logger.error(e);
                         }
                     });
                     t.start();
@@ -54,7 +60,6 @@ public class RootController implements ErrorController {
                 }
                 long end = System.currentTimeMillis();
                 float sec = (end - start) / 1000F;
-                System.out.println(sec + " seconds");
                 responseJSON
                         .put("time", sec)
                         .put("torrents", torrentsArrayJSON)

@@ -5,6 +5,7 @@ import com.example.torrentsearch.configurations.SourceConfiguration;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentSource;
 import com.example.torrentsearch.torrents.TorrentValidator;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 
 @Service
 public class SourceTorLock implements TorrentSource {
-
+    Logger logger = Logger.getLogger(SourceTorLock.class);
     @Autowired
     ArrayList<Class<?>> getSources;
 
@@ -36,7 +37,6 @@ public class SourceTorLock implements TorrentSource {
         ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
         try {
             String url = "https://www.torlock.com/all/torrents/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + ".html?";
-            System.out.println(url);
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
@@ -52,15 +52,7 @@ public class SourceTorLock implements TorrentSource {
             Elements sizeNodes = document.select("table:eq(0) td:eq(2)");
             Elements addedNodes = document.select("table:eq(0) td:eq(1)");
             Elements endUrlNodes = document.select("table:eq(0) td:eq(0) a");
-            System.out.println(
-                    "categoryNodes: " + categoryNodes.size() +
-                            "titleNodesSize: " + titleNodes.size() +
-                            "seedNodesSize: " + seedsNodes.size() +
-                            "leechesNodesSize: " + leechesNodes.size() +
-                            "sizeNodesSize: " + sizeNodes.size() +
-                            "addedNodes: " + addedNodes.size() +
-                            "endUrlNodesSize: " + endUrlNodes.size()
-            );
+
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
             if (TorrentValidator.validate(new Elements[]{categoryNodes, titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
                 int maxPerSite = SourceConfiguration.maxPerSite;
@@ -93,7 +85,7 @@ public class SourceTorLock implements TorrentSource {
                 }
             }
         } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
         return torrentDataHolderArrayList.toArray(TorrentDataHolder[]::new);
     }
@@ -113,7 +105,7 @@ public class SourceTorLock implements TorrentSource {
                 return magnets.get(0).attr("href");
             }
         } catch (IOException e) {
-            System.out.println("IOException at TorrentListGrabber.java while trying to parse magnet link from url " + url);
+            logger.error(e);
         }
         return magnetLink;
     }

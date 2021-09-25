@@ -4,6 +4,7 @@ import com.example.torrentsearch.configurations.SourceCategories;
 import com.example.torrentsearch.configurations.SourceConfiguration;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import com.example.torrentsearch.torrents.TorrentValidator;
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -17,6 +18,9 @@ import java.util.ArrayList;
 
 @Service
 public class SourcePiratesBay {
+
+	Logger logger = Logger.getLogger(SourcePiratesBay.class);
+
 	@Autowired
 	ArrayList<Class<?>> getSources;
 
@@ -32,7 +36,6 @@ public class SourcePiratesBay {
 		ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
 		try {
 			String url = "https://piratebay.live/search/" + convertSearchQuery(searchQuery);
-			System.out.println(url);
 			Document document = Jsoup.connect(url)
 					.ignoreContentType(true)
 					.ignoreHttpErrors(true)
@@ -49,15 +52,7 @@ public class SourcePiratesBay {
 			Elements addedNodes = sizeNodes;
 			Elements endUrlNodes = titleNodes;
 
-			System.out.println(
-					"categoryNodesSize: " + categoryNodes.size() +
-							"titleNodesSize: " + titleNodes.size() +
-							"seedNodesSize: " + seedsNodes.size() +
-							"leechesNodesSize: " + leechesNodes.size() +
-							"sizeNodesSize: " + sizeNodes.size() +
-							"addedNodes: " + addedNodes.size() +
-							"endUrlNodesSize: " + endUrlNodes.size()
-			);
+
 
 			if (TorrentValidator.validate(new Elements[]{categoryNodes, titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
 				Elements magnets = document.select("#searchResult tbody tr td:eq(1) :eq(1)");
@@ -80,7 +75,7 @@ public class SourcePiratesBay {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e);
 		}
 		return torrentDataHolderArrayList.toArray(TorrentDataHolder[]::new);
 	}
