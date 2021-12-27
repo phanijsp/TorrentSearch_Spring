@@ -1,20 +1,17 @@
-FROM openjdk:15.0.1 AS TEMP_BUILD_IMAGE
-ENV APP_HOME=/usr/app/
-WORKDIR $APP_HOME
-COPY build.gradle settings.gradle gradlew $APP_HOME
-COPY gradle $APP_HOME/gradle
-RUN chmod +x gradlew
-RUN ./gradlew build || return 0 
-COPY . .
-RUN ./gradlew build
+FROM gradle:4.7.0-jdk8-alpine AS build
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN gradle build --no-daemon 
 
-FROM openjdk:15.0.1
-ENV ARTIFACT_NAME=torrentsearch-0.0.2.jar
-ENV APP_HOME=/usr/app/
-WORKDIR $APP_HOME
-COPY --from=TEMP_BUILD_IMAGE $APP_HOME/build/libs/$ARTIFACT_NAME .
+FROM openjdk:8-jre-slim
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "torrent-search.jar"]
+
+RUN mkdir /app
+
+COPY --from=build /home/gradle/src/build/libs/*.jar /app/spring-boot-application.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "/app/spring-boot-application.jar"]
 
 #FROM openjdk:15.0.1
 #ADD build/libs/torrentsearch-0.0.2.jar torrent-search.jar
