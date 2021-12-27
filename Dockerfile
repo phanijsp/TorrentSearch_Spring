@@ -1,9 +1,9 @@
-FROM gradle:jdk15-alpine AS build
+FROM gradle:jdk17-alpine AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN gradle build --no-daemon 
 
-FROM openjdk:8-jre-slim
+FROM openjdk:15.0.1
 
 EXPOSE 8080
 
