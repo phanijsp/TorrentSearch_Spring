@@ -8,7 +8,7 @@ on:
 
 jobs:
   Build_Run:
-    name: Multiply by 9
+    name: Build image
     runs-on: self-hosted
 
     steps:
