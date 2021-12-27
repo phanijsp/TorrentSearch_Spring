@@ -7,9 +7,8 @@ on:
     branches: [ master ]
 
 jobs:
-
-  build:
-
+  Build_Run:
+    name: Multiply by 9
     runs-on: self-hosted
 
     steps:
