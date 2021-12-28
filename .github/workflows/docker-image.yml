@@ -7,19 +7,14 @@ on:
     branches: [ master ]
 
 jobs:
-  Build-Image:
-    name: Build image
+  Build-Deploy:
+    name: Build and deploy
     runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build docker image
       run: docker build . --file Dockerfile --tag torrent-search-spring:latest
-      
-  Redploy-Container:
-    name: Start Container
-    runs-on: self-hosted
-    
-    steps:
-    - name: Execute script to redploy container
+    - name: Redploy container
       run: /home/phanijsp/docker-run/init.sh
+    
