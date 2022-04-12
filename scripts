@@ -1,0 +1,47 @@
+#setting up in env
+	gradle bootJar
+
+#For better monitoring Run the build as a system service in ubuntu
+
+	Step_1	sudo vim /etc/systemd/system/sand-se.service
+
+	Step_2	Put below content in the file sand-se.service
+
+					[Unit]
+					Description=My Webapp Java REST Service
+					[Service]
+					User=root
+					# The configuration file application.properties should be here:
+
+					#change this to your workspace
+					WorkingDirectory=/
+
+					#path to executable. 
+					#executable is a bash script which calls jar file
+					ExecStart=/root/startApp
+
+					SuccessExitStatus=143
+					TimeoutStopSec=10
+					Restart=on-failure
+					RestartSec=5
+
+					[Install]
+					WantedBy=multi-user.target
+
+	Step_3	Create startApp file in the directory specified as 'ExecStart' in sand-se.service
+
+					#!/bin/sh
+					java -jar ~/TorrentSearch_Spring/build/libs/torrentsearch-0.0.2.jar
+
+	Step_4	To start the service run below commands
+					
+					sudo systemctl daemon-reload
+					sudo systemctl enable sand-se.service
+					sudo systemctl start sand-se
+					sudo systemctl status sand-se
+					
+	Step_5	To view live log
+					
+					sudo journalctl -f -u sand-se
+					
+					
