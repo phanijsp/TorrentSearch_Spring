@@ -61,8 +61,7 @@ public class RootController implements ErrorController {
                         System.out.println("Killer thread initiated...");
                         for(Thread thread: sourceRunners){
                             if(thread != null && thread.isAlive()) {
-
-                                thread.interrupt();
+                                new Thread(thread::interrupt).start();
                                 System.out.println("Killed... "+thread.getId());
                             }
                         }
