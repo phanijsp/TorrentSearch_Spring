@@ -67,7 +67,7 @@ public class RootController implements ErrorController {
                             }
                         }
                     }
-                }, 10000);
+                }, 7000);
 
                 for (Thread sourceRunner : sourceRunners) {
                     try {
