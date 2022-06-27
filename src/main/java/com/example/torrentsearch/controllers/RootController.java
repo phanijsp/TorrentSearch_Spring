@@ -43,7 +43,7 @@ public class RootController implements ErrorController {
         long start = System.currentTimeMillis();
 
         for(Entry<String, String> entry : responseQueue){
-            if(entry.getKey().equals(query)){
+            if(entry.getKey().equalsIgnoreCase(query)){
                 System.out.println("Found in cache... "+query+" Queue size... "+responseQueue.size());
                 return entry.getValue();
             }
