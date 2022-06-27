@@ -12,6 +12,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 @RestController
 public class RootController implements ErrorController {
@@ -51,6 +53,22 @@ public class RootController implements ErrorController {
                     t.start();
                     sourceRunners.add(t);
                 }
+
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        System.out.println("Killer thread initiated...");
+                        for(Thread thread: sourceRunners){
+                            if(thread != null && thread.isAlive()) {
+
+                                thread.interrupt();
+                                System.out.println("Killed... "+thread.getId());
+                            }
+                        }
+                    }
+                }, 10000);
+
                 for (Thread sourceRunner : sourceRunners) {
                     try {
                         sourceRunner.join();
