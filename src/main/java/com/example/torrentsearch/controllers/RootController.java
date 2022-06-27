@@ -35,7 +35,7 @@ public class RootController implements ErrorController {
         }
     }
 
-    private final Queue<Map.Entry<String, String>> responseQueue = new CircularQueue<>(5);
+    private final Queue<Map.Entry<String, String>> responseQueue = new CircularQueue<>(27);
 
 
     @PostMapping("/search")
