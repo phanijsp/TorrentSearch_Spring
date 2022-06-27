@@ -60,10 +60,12 @@ public class RootController implements ErrorController {
                     public void run() {
                         System.out.println("Killer thread initiated...");
                         for(Thread thread: sourceRunners){
-                            if(thread != null && thread.isAlive()) {
-                                new Thread(thread::interrupt).start();
-                                System.out.println("Killed... "+thread.getId());
-                            }
+                                new Thread(() -> {
+                                    if (thread != null && thread.isAlive()) {
+                                        thread.interrupt();
+                                        System.out.println("Killed... "+thread.getId());
+                                    }
+                                }).start();
                         }
                     }
                 }, 7000);
