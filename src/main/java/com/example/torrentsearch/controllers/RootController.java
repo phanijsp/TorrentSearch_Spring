@@ -54,22 +54,6 @@ public class RootController implements ErrorController {
                     sourceRunners.add(t);
                 }
 
-                Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        System.out.println("Killer thread initiated...");
-                        for(Thread thread: sourceRunners){
-                                new Thread(() -> {
-                                    if (thread != null && thread.isAlive()) {
-                                        thread.interrupt();
-                                        System.out.println("Killed... "+thread.getId());
-                                    }
-                                }).start();
-                        }
-                    }
-                }, 7000);
-
                 for (Thread sourceRunner : sourceRunners) {
                     try {
                         sourceRunner.join();
