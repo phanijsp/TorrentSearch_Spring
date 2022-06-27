@@ -11,9 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
+import java.util.Map.Entry;
 
 @RestController
 public class RootController implements ErrorController {
@@ -21,9 +20,34 @@ public class RootController implements ErrorController {
     @Autowired
     ArrayList<Class<?>> getSources;
 
+    static class CircularQueue<E> extends LinkedList<E> {
+        private int capacity = 10;
+
+        public CircularQueue(int capacity){
+            this.capacity = capacity;
+        }
+
+        @Override
+        public boolean add(E e) {
+            if(size() >= capacity)
+                removeFirst();
+            return super.add(e);
+        }
+    }
+
+    private final Queue<Map.Entry<String, String>> responseQueue = new CircularQueue<>(5);
+
+
     @PostMapping("/search")
     public String index(@RequestParam(value = "type") String type, @RequestParam(value = "query") String query) {
         long start = System.currentTimeMillis();
+
+        for(Entry<String, String> entry : responseQueue){
+            if(entry.getKey().equals(query)){
+                System.out.println("Found in cache... "+query+" Queue size... "+responseQueue.size());
+                return entry.getValue();
+            }
+        }
 
         JSONObject responseJSON = new JSONObject();
         switch (type) {
@@ -69,6 +93,9 @@ public class RootController implements ErrorController {
                         .put("sources", sourcesJSON);
                 break;
         }
+
+        Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(query, responseJSON.toString());
+        responseQueue.add(entry);
         return responseJSON.toString();
 
     }
