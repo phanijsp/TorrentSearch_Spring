@@ -60,7 +60,7 @@ public class SourceMovieRulz implements TorrentSource {
         }catch (Exception e){
             logger.error(e);
         }
-        return new TorrentDataHolder[0];
+        return torrentDataHolderArrayList.toArray(TorrentDataHolder[]::new);
     }
 
     public ArrayList<TorrentDataHolder> getEndUrlTorrents(String url){
@@ -93,7 +93,6 @@ public class SourceMovieRulz implements TorrentSource {
                     ));
                 }
             }
-            logger.debug(elements.size());
         }catch (Exception e){
             logger.error(e);
         }
