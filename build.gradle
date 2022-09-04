@@ -21,7 +21,7 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'junit:junit:4.12'
-	implementation 'org.jsoup:jsoup:1.13.1'
+	implementation 'org.jsoup:jsoup:1.15.3'
 	// https://mvnrepository.com/artifact/org.json/json
 	implementation group: 'org.json', name: 'json', version: '20211205'
 
