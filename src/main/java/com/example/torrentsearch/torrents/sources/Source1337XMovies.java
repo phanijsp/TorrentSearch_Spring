@@ -28,7 +28,9 @@ public class Source1337XMovies implements TorrentSource {
     ArrayList<Class<?>> getSources;
 
     @PostConstruct
-    public void fun(){getSources.add(Source1337XMovies.class);}
+    public void fun(){
+//        getSources.add(Source1337XMovies.class);
+    }
 
     final String baseUrl = "https://1337x.to";
 
