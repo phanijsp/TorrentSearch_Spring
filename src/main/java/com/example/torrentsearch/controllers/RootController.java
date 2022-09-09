@@ -44,8 +44,17 @@ public class RootController implements ErrorController {
 
         for(Entry<String, String> entry : responseQueue){
             if(entry.getKey().equalsIgnoreCase(query)){
-                System.out.println("Found in cache... "+query+" Queue size... "+responseQueue.size());
-                return entry.getValue();
+                try{
+                    System.out.println("Found in cache... "+query+" Queue size... "+responseQueue.size());
+                    JSONObject jsonObject = new JSONObject(entry.getValue());
+                    long end = System.currentTimeMillis();
+                    float sec = (end - start) / 1000F;
+                    jsonObject
+                            .put("time", sec);
+                    return jsonObject.toString();
+                }catch (Exception e){
+                    logger.error("Cache error: "+e);
+                }
             }
         }
 

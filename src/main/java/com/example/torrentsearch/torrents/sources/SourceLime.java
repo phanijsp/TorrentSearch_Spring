@@ -32,13 +32,13 @@ public class SourceLime implements TorrentSource {
         getSources.add(SourceLime.class);
     }
 
-    final String baseUrl = "https://wwv.xn--lmetorrents-ocb.cc";
+    final String baseUrl = "http://www.limetorrentx.cc";
 
     @Override
     public TorrentDataHolder[] getTorrents(String searchQuery) {
         ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
         try {
-            String url = "https://wwv.xn--lmetorrents-ocb.cc/search/all/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + "/";
+            String url = "http://www.limetorrentx.cc/search/all/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + "/";
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
@@ -58,11 +58,8 @@ public class SourceLime implements TorrentSource {
 
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
             if (TorrentValidator.validate(new Elements[]{titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
-                int maxPerSite = SourceConfiguration.maxPerSite;
-                if(titleNodes.size()<maxPerSite){
-                    maxPerSite = titleNodes.size();
-                }
-                for (int i = 0; i < maxPerSite; i++) {
+
+                for (int i = 0; i < titleNodes.size(); i++) {
                     int finalI = i;
                     Thread MagnetFetcher = new Thread(() -> {
                         String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
@@ -108,7 +105,7 @@ public class SourceLime implements TorrentSource {
                 return magnets.get(0).attr("href");
             }
         } catch (IOException e) {
-            logger.error(e);
+            logger.error("GetMagnet Error: "+e);
         }
         return magnetLink;
     }
