@@ -32,13 +32,13 @@ public class SourceLime implements TorrentSource {
         getSources.add(SourceLime.class);
     }
 
-    final String baseUrl = "http://www.limetorrentx.cc";
+    final String baseUrl = "https://www.limetorrentx.cc";
 
     @Override
     public TorrentDataHolder[] getTorrents(String searchQuery) {
         ArrayList<TorrentDataHolder> torrentDataHolderArrayList = new ArrayList<>();
         try {
-            String url = "http://www.limetorrentx.cc/search/all/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + "/";
+            String url = "https://www.limetorrentx.cc/search/all/" + URLEncoder.encode(searchQuery, StandardCharsets.UTF_8) + "/";
             Document document = Jsoup.connect(url)
                     .ignoreContentType(true)
                     .ignoreHttpErrors(true)
