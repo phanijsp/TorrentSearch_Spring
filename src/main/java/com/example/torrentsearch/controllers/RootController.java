@@ -91,6 +91,8 @@ public class RootController implements ErrorController {
                         .put("time", sec)
                         .put("torrents", torrentsArrayJSON)
                         .put("sources", sourcesJSON);
+                System.out.println("For query :"+query);
+                System.out.println(sourcesJSON);
                 break;
         }
 
