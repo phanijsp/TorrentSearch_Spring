@@ -56,10 +56,14 @@ public class SourceLime implements TorrentSource {
             Elements addedNodes = document.select(".table2 .tdnormal:eq(1)");
             Elements endUrlNodes = document.select(".table2 .tt-name a:eq(1)");
 
+            int maxPerSite = SourceConfiguration.maxPerSite;
+            if(titleNodes.size()<maxPerSite){
+                maxPerSite = titleNodes.size();
+            }
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
             if (TorrentValidator.validate(new Elements[]{titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
 
-                for (int i = 0; i < titleNodes.size(); i++) {
+                for (int i = 0; i < maxPerSite; i++) {
                     int finalI = i;
                     Thread MagnetFetcher = new Thread(() -> {
                         String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));

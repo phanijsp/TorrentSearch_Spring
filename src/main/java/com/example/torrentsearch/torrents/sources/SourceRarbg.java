@@ -58,7 +58,13 @@ public class SourceRarbg implements TorrentSource {
             Elements endUrlNodes = document.select(".table2ta_rarbgproxy td:eq(1) a");
 
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
-            for (int i = 0; i < titleNodes.size(); i++) {
+
+            int maxPerSite = SourceConfiguration.maxPerSite;
+            if(titleNodes.size()<maxPerSite){
+                maxPerSite = titleNodes.size();
+            }
+
+            for (int i = 0; i < maxPerSite; i++) {
                 int finalI = i;
                 Thread MagnetFetcher = new Thread(() -> {
                     String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));

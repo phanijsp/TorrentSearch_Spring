@@ -59,6 +59,7 @@ public class RootController implements ErrorController {
         }
 
         JSONObject responseJSON = new JSONObject();
+        int resultSize = 0;
         switch (type) {
             case "search":
                 try {
@@ -102,11 +103,13 @@ public class RootController implements ErrorController {
                         .put("sources", sourcesJSON);
                 System.out.println("For query :"+query);
                 System.out.println(sourcesJSON);
+                resultSize = torrentsArrayJSON.length();
                 break;
         }
-
-        Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(query, responseJSON.toString());
-        responseQueue.add(entry);
+        if(resultSize > 10){
+            Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(query, responseJSON.toString());
+            responseQueue.add(entry);
+        }
         return responseJSON.toString();
 
     }
