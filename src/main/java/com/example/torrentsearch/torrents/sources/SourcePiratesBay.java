@@ -49,25 +49,23 @@ public class SourcePiratesBay {
 			Elements seedsNodes = document.select("#searchResult tbody tr td:eq(2)");
 			Elements leechesNodes = document.select("#searchResult tbody tr td:eq(3)");
 			Elements sizeNodes = document.select("#searchResult tbody tr td:eq(1) font");
-			Elements addedNodes = sizeNodes;
-			Elements endUrlNodes = titleNodes;
 
 
-
-			if (TorrentValidator.validate(new Elements[]{categoryNodes, titleNodes, seedsNodes, leechesNodes, sizeNodes, addedNodes, endUrlNodes})) {
+			if (TorrentValidator.validate(new Elements[]{categoryNodes, titleNodes, seedsNodes, leechesNodes, sizeNodes, sizeNodes, titleNodes})) {
 				Elements magnets = document.select("#searchResult tbody tr td:eq(1) :eq(1)");
 				for (int i = 0; i < titleNodes.size(); i++) {
 					String magnet = magnets.get(i).attr("href");
 					if (magnet.startsWith("magnet")) {
+						SourceConfiguration.addTrackers(magnet);
 						torrentDataHolderArrayList.add(new TorrentDataHolder(
 								getCategory(categoryNodes.get(i).text()),
 								titleNodes.get(i).text(),
 								seedsNodes.get(i).text(),
 								leechesNodes.get(i).text(),
 								getSize(sizeNodes.get(i).text()),
-								getAdded(addedNodes.get(i).text()),
+								getAdded(sizeNodes.get(i).text()),
 								SourcePiratesBay.class.getSimpleName(),
-								appendBaseEndUrls(baseUrl, endUrlNodes.get(i).attr("href")),
+								appendBaseEndUrls(baseUrl, titleNodes.get(i).attr("href")),
 								magnet
 						));
 					}

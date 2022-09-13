@@ -69,6 +69,7 @@ public class SourceRarbg implements TorrentSource {
                 Thread MagnetFetcher = new Thread(() -> {
                     String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                     if (magnet.startsWith("magnet")) {
+                        SourceConfiguration.addTrackers(magnet);
                         torrentDataHolderArrayList.add(new TorrentDataHolder(
                                 getCategory(categoryNodes.get(finalI).text()),
                                 titleNodes.get(finalI).text(),

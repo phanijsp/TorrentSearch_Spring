@@ -29,7 +29,7 @@ public class Source1337XMovies implements TorrentSource {
 
     @PostConstruct
     public void fun(){
-//        getSources.add(Source1337XMovies.class);
+        getSources.add(Source1337XMovies.class);
     }
 
     final String baseUrl = "https://1337x.to";
@@ -56,12 +56,17 @@ public class Source1337XMovies implements TorrentSource {
             Elements addedNodes = document.select("tr td:eq(3)");
             Elements endUrlNodes = document.select("tr td:eq(0) a:eq(1)");
 
+            int maxPerSite = SourceConfiguration.maxPerSite;
+            if(titleNodes.size()<maxPerSite){
+                maxPerSite = titleNodes.size();
+            }
             ArrayList<Thread> magnetFetchers = new ArrayList<>();
-            for (int i = 0; i < titleNodes.size(); i++) {
+            for (int i = 0; i < maxPerSite; i++) {
                 int finalI = i;
                 Thread MagnetFetcher = new Thread(() -> {
                     String magnet = getMagnet(endUrlNodes.get(finalI).attr("href"));
                     if (magnet.startsWith("magnet")) {
+                        SourceConfiguration.addTrackers(magnet);
                         torrentDataHolderArrayList.add(new TorrentDataHolder(
                                 SourceCategories.Movie,
                                 titleNodes.get(finalI).text(),

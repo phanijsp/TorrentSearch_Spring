@@ -89,7 +89,7 @@ public class SourceMovieRulz implements TorrentSource {
                             "NA",
                             SourceMovieRulz.class.getSimpleName(),
                             url,
-                            elements.get(i).attr("href")
+                            SourceConfiguration.addTrackers(elements.get(i).attr("href"))
                     ));
                 }
             }
