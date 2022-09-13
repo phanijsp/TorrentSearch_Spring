@@ -245,11 +245,12 @@ public class SourceConfiguration {
     "http://1337.abcvg.info:80/announce");
 
     public static String addTrackers(String magnet){
-        StringBuilder magnetBuilder = new StringBuilder(magnet);
-        for(String tracker : SourceConfiguration.trackersList){
-            magnetBuilder.append("&tr=");
-            magnetBuilder.append(URLEncoder.encode(tracker, StandardCharsets.UTF_8));
-        }
-        return magnetBuilder.toString();
+//        StringBuilder magnetBuilder = new StringBuilder(magnet);
+//        for(String tracker : SourceConfiguration.trackersList){
+//            magnetBuilder.append("&tr=");
+//            magnetBuilder.append(URLEncoder.encode(tracker, StandardCharsets.UTF_8));
+//        }
+//        return magnetBuilder.toString();
+        return magnet;
     }
 }
