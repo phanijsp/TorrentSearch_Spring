@@ -1,6 +1,6 @@
 package com.example.torrentsearch.controllers;
 
-import com.example.torrentsearch.repository.TorrentRepository;
+import com.example.torrentsearch.services.TorrentService;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -21,14 +21,15 @@ public class RootController implements ErrorController {
     @Autowired
     ArrayList<Class<?>> getSources;
 
+
     @Autowired
-    private TorrentRepository torrentRepository;
+    private TorrentService torrentService;
 
     @PostMapping("/express")
     public String expressIndex(@RequestParam(value = "query") String query){
         long start = System.currentTimeMillis();
         JSONObject responseJSON = new JSONObject();
-        List<TorrentDataHolder> torrentDataHolders = torrentRepository.findByTitleLike(query);
+        List<TorrentDataHolder> torrentDataHolders = torrentService.getTorrents(query);
         JSONArray torrentsArrayJSON = new JSONArray();
         for(TorrentDataHolder dataHolder: torrentDataHolders){
             torrentsArrayJSON.put(dataHolder.getDataInJSON());
@@ -70,7 +71,7 @@ public class RootController implements ErrorController {
                             for (TorrentDataHolder dataHolder : dataHolders) {
                                 torrentsArrayJSON.put(dataHolder.getDataInJSON());
                                 try {
-                                    torrentRepository.save(dataHolder);
+                                    torrentService.save(dataHolder);
                                 }catch (Exception e){
                                     e.printStackTrace();
                                 }
