@@ -1,9 +1,16 @@
 package com.example.torrentsearch.torrents;
 
 import org.json.JSONObject;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.TextIndexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document
 public class TorrentDataHolder {
 	String category;
+
+	@Id
+	@TextIndexed
 	String title;
 	String seeds;
 	String leeches;
@@ -36,5 +43,9 @@ public class TorrentDataHolder {
                 .put("source", source)
                 .put("sourceUrl", sourceUrl)
                 .put("magnet", magnet);
+	}
+
+	public String getTitle() {
+		return title;
 	}
 }

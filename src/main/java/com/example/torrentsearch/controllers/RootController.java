@@ -1,5 +1,6 @@
 package com.example.torrentsearch.controllers;
 
+import com.example.torrentsearch.repository.TorrentRepository;
 import com.example.torrentsearch.torrents.TorrentDataHolder;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -20,46 +21,34 @@ public class RootController implements ErrorController {
     @Autowired
     ArrayList<Class<?>> getSources;
 
-    static class CircularQueue<E> extends LinkedList<E> {
-        private int capacity = 10;
+    @Autowired
+    private TorrentRepository torrentRepository;
 
-        public CircularQueue(int capacity){
-            this.capacity = capacity;
+    @PostMapping("/express")
+    public String expressIndex(@RequestParam(value = "query") String query){
+        long start = System.currentTimeMillis();
+        JSONObject responseJSON = new JSONObject();
+        List<TorrentDataHolder> torrentDataHolders = torrentRepository.findByTitleLike(query);
+        JSONArray torrentsArrayJSON = new JSONArray();
+        for(TorrentDataHolder dataHolder: torrentDataHolders){
+            torrentsArrayJSON.put(dataHolder.getDataInJSON());
         }
-
-        @Override
-        public boolean add(E e) {
-            if(size() >= capacity)
-                removeFirst();
-            return super.add(e);
-        }
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        responseJSON
+                .put("time", sec)
+                .put("torrents", torrentsArrayJSON)
+                .put("sources", "");
+        return responseJSON.toString();
     }
 
-    private final Queue<Map.Entry<String, String>> responseQueue = new CircularQueue<>(27);
-
-
     @PostMapping("/search")
-    public String index(@RequestParam(value = "type") String type, @RequestParam(value = "query") String query) {
+    public String index(@RequestParam(value = "type") String type, @RequestParam(value = "query") String queryX) {
         long start = System.currentTimeMillis();
-
-        for(Entry<String, String> entry : responseQueue){
-            if(entry.getKey().equalsIgnoreCase(query)){
-                try{
-                    System.out.println("Found in cache... "+query+" Queue size... "+responseQueue.size());
-                    JSONObject jsonObject = new JSONObject(entry.getValue());
-                    long end = System.currentTimeMillis();
-                    float sec = (end - start) / 1000F;
-                    jsonObject
-                            .put("time", sec);
-                    return jsonObject.toString();
-                }catch (Exception e){
-                    logger.error("Cache error: "+e);
-                }
-            }
-        }
+        String query = queryX.trim();
 
         JSONObject responseJSON = new JSONObject();
-        int resultSize = 0;
+
         switch (type) {
             case "search":
                 try {
@@ -79,6 +68,11 @@ public class RootController implements ErrorController {
                             sourcesJSON.put(getSource.getSimpleName(), String.valueOf(dataHolders.length));
                             for (TorrentDataHolder dataHolder : dataHolders) {
                                 torrentsArrayJSON.put(dataHolder.getDataInJSON());
+                                try {
+                                    torrentRepository.save(dataHolder);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
                             }
                         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | UnsupportedEncodingException e) {
                             logger.error(e);
@@ -103,13 +97,9 @@ public class RootController implements ErrorController {
                         .put("sources", sourcesJSON);
                 System.out.println("For query :"+query);
                 System.out.println(sourcesJSON);
-                resultSize = torrentsArrayJSON.length();
                 break;
         }
-        if(resultSize > 10){
-            Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(query, responseJSON.toString());
-            responseQueue.add(entry);
-        }
+
         return responseJSON.toString();
 
     }
