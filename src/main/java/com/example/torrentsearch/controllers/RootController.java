@@ -32,6 +32,7 @@ public class RootController implements ErrorController {
         JSONArray torrentsArrayJSON = new JSONArray();
         for(TorrentDataHolder dataHolder: torrentDataHolders){
             torrentsArrayJSON.put(dataHolder.getDataInJSON());
+            logger.debug(query+"\t"+dataHolder.getScore()+"\t"+dataHolder.getTitle());
         }
         long end = System.currentTimeMillis();
         float sec = (end - start) / 1000F;
