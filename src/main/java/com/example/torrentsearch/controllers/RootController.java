@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.Executors;
 
 @RestController
 public class RootController implements ErrorController {
@@ -26,9 +27,29 @@ public class RootController implements ErrorController {
     private TorrentService torrentService;
 
     @PostMapping("/express")
-    public String expressIndex(@RequestParam(value = "query") String query){
+    public String expressSearchIndex(@RequestParam(value = "query") String query){
         long start = System.currentTimeMillis();
         JSONObject responseJSON = new JSONObject();
+        List<TorrentDataHolder> torrentDataHolders = torrentService.getTorrents(query);
+        JSONArray torrentsArrayJSON = new JSONArray();
+        for(TorrentDataHolder dataHolder: torrentDataHolders){
+            torrentsArrayJSON.put(dataHolder.getDataInJSON());
+            logger.debug(query+"\t"+dataHolder.getScore()+"\t"+dataHolder.getTitle());
+        }
+        long end = System.currentTimeMillis();
+        float sec = (end - start) / 1000F;
+        responseJSON
+                .put("time", sec)
+                .put("torrents", torrentsArrayJSON)
+                .put("sources", "");
+        Executors.newSingleThreadExecutor().execute(() -> index("search",query));
+        return responseJSON.toString();
+    }
+    @PostMapping("/deepSearch")
+    public String deepSearchIndex(@RequestParam(value = "query") String query){
+        long start = System.currentTimeMillis();
+        JSONObject responseJSON = new JSONObject();
+        index("search",query);
         List<TorrentDataHolder> torrentDataHolders = torrentService.getTorrents(query);
         JSONArray torrentsArrayJSON = new JSONArray();
         for(TorrentDataHolder dataHolder: torrentDataHolders){

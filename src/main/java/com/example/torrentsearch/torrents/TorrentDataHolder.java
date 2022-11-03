@@ -41,6 +41,7 @@ public class TorrentDataHolder {
 		return new JSONObject()
 				.put("category", category)
                 .put("title", title)
+				.put("score",score)
                 .put("seeds", seeds)
                 .put("leeches", leeches)
                 .put("size", size)
