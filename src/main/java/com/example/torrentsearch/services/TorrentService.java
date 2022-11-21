@@ -19,7 +19,7 @@ public class TorrentService {
 
     public List<TorrentDataHolder> getTorrents(String searchQuery){
         TextQuery textQuery = TextQuery.queryText(new TextCriteria().matchingAny(searchQuery)).sortByScore();
-        textQuery.limit(100);
+        textQuery.limit(50);
         return mongoTemplate.find(textQuery,TorrentDataHolder.class,"torrentDataHolder");
 
     }
