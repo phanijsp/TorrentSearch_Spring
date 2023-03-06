@@ -7,8 +7,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
@@ -25,6 +30,13 @@ public class RootController implements ErrorController {
 
     @Autowired
     private TorrentService torrentService;
+
+
+    private final ResourceLoader resourceLoader;
+
+    public RootController(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     @PostMapping("/express")
     public String expressSearchIndex(@RequestParam(value = "query") String query){
@@ -138,5 +150,18 @@ public class RootController implements ErrorController {
 //    public String getErrorPath() {
 //        return PATH;
 //    }
+
+
+
+    @GetMapping("/privacy-policy")
+    public ResponseEntity<String> getStaticHtml() {
+        Resource resource = resourceLoader.getResource("classpath:/privacy-policy.html");
+        try {
+            String html = new String(resource.getInputStream().readAllBytes());
+            return ResponseEntity.ok().body(html);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
 }
