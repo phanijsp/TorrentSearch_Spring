@@ -134,9 +134,9 @@ public class RootController implements ErrorController {
         return "<html><body><p style=\"font-size: 696px\">69</p></body></html>";
     }
 
-    @Override
-    public String getErrorPath() {
-        return PATH;
-    }
+//    @Override
+//    public String getErrorPath() {
+//        return PATH;
+//    }
 
 }
